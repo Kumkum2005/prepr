@@ -18,7 +18,7 @@ text and text-to-speech for a real spoken conversation.
 ## Roadmap
 
 - [x] Project scaffold
-- [ ] Phase 1 — MVP: one behavioral interview mode, text-based Q&A loop with Claude, feedback after each answer
+- [x] Phase 1 — MVP: one behavioral interview mode, text-based Q&A loop with Claude, feedback after each answer
 - [ ] Phase 2 — Voice: speech-to-text input, text-to-speech questions
 - [ ] Phase 3 — Accounts & history: Supabase auth, save past sessions
 - [ ] Phase 4 — More modes: coding/system-design questions, progress dashboard
