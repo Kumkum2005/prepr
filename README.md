@@ -25,6 +25,11 @@ text and text-to-speech for a real spoken conversation.
 - [ ] Phase 5 — Polish & app store prep: icons, screenshots, privacy policy, store listings
 - [ ] Phase 6 — Submit to App Store & Google Play
 
+## Known improvements for later
+
+- Voice recording → transcription feels slow; look into speeding up the
+  record/upload/transcribe round trip.
+
 ## Getting started
 
 ```bash
