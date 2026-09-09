@@ -29,6 +29,10 @@ text and text-to-speech for a real spoken conversation.
 
 - Voice recording → transcription feels slow; look into speeding up the
   record/upload/transcribe round trip.
+- Email confirmation is currently turned off in Supabase (the confirmation
+  link tries to open a website that doesn't exist). Before real users sign
+  up, set up a proper deep link (e.g. `prepr://`) so confirmation opens
+  back into the app instead of a browser.
 
 ## Getting started
 
