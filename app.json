@@ -20,6 +20,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermissionText": "Prepr uses your microphone so you can speak your interview answers."
+        }
+      ]
+    ]
   }
 }

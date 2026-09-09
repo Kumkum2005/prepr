@@ -3,14 +3,21 @@ import { StatusBar } from 'expo-status-bar';
 import {
   ActivityIndicator,
   Button,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import {
+  RecordingPresets,
+  requestRecordingPermissionsAsync,
+  useAudioRecorder,
+} from 'expo-audio';
 import { ChatMessage, continueInterview } from './src/services/claude';
 import { speak, stopSpeaking } from './src/services/speech';
+import { transcribeAudio } from './src/services/transcribe';
 
 export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -18,6 +25,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [started, setStarted] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   async function sendToInterviewer(history: ChatMessage[]) {
     setLoading(true);
@@ -50,6 +60,31 @@ export default function App() {
     setMessages(history);
     setInput('');
     sendToInterviewer(history);
+  }
+
+  async function startRecording() {
+    const { granted } = await requestRecordingPermissionsAsync();
+    if (!granted) return;
+    await recorder.prepareToRecordAsync();
+    recorder.record();
+    setRecording(true);
+  }
+
+  async function stopRecordingAndTranscribe() {
+    setRecording(false);
+    await recorder.stop();
+    const uri = recorder.uri;
+    if (!uri) return;
+
+    setTranscribing(true);
+    try {
+      const text = await transcribeAudio(uri);
+      setInput((prev) => (prev ? `${prev} ${text}` : text));
+    } catch (error) {
+      setInput((prev) => prev || '');
+    } finally {
+      setTranscribing(false);
+    }
   }
 
   return (
@@ -100,13 +135,22 @@ export default function App() {
           <View style={styles.inputRow}>
             <TextInput
               style={styles.input}
-              placeholder="Type your answer..."
+              placeholder="Type, or hold the mic button to speak..."
               placeholderTextColor="#6b7280"
               value={input}
               onChangeText={setInput}
               multiline
             />
-            <Button title="Send" onPress={sendAnswer} disabled={loading} />
+            <Pressable
+              style={[styles.micButton, recording && styles.micButtonActive]}
+              onPressIn={startRecording}
+              onPressOut={stopRecordingAndTranscribe}
+            >
+              <Text style={styles.micButtonText}>
+                {transcribing ? 'Transcribing...' : recording ? '● Recording... release to stop' : '🎙️ Hold to speak'}
+              </Text>
+            </Pressable>
+            <Button title="Send" onPress={sendAnswer} disabled={loading || transcribing} />
           </View>
         </>
       )}
@@ -166,6 +210,20 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     marginBottom: 20,
+  },
+  micButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  micButtonActive: {
+    backgroundColor: '#7f1d1d',
+  },
+  micButtonText: {
+    color: '#e5e7eb',
+    fontSize: 14,
   },
   input: {
     backgroundColor: '#1f2937',
