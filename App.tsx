@@ -10,18 +10,21 @@ import {
   View,
 } from 'react-native';
 import { ChatMessage, continueInterview } from './src/services/claude';
+import { speak, stopSpeaking } from './src/services/speech';
 
 export default function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [started, setStarted] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(true);
 
   async function sendToInterviewer(history: ChatMessage[]) {
     setLoading(true);
     try {
       const reply = await continueInterview(history);
       setMessages([...history, { role: 'assistant', content: reply }]);
+      if (voiceOn) speak(reply);
     } catch (error) {
       setMessages([
         ...history,
@@ -51,8 +54,22 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Prepr</Text>
-      <Text style={styles.subtitle}>Mock behavioral interview</Text>
+      <View style={styles.headerRow}>
+        <View>
+          <Text style={styles.title}>Prepr</Text>
+          <Text style={styles.subtitle}>Mock behavioral interview</Text>
+        </View>
+        {started && (
+          <Button
+            title={voiceOn ? '🔊 Voice On' : '🔇 Voice Off'}
+            onPress={() => {
+              const next = !voiceOn;
+              setVoiceOn(next);
+              if (!next) stopSpeaking();
+            }}
+          />
+        )}
+      </View>
 
       {!started && (
         <Button title="Start Interview" onPress={startInterview} />
@@ -105,6 +122,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#111827',
     paddingTop: 80,
     paddingHorizontal: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 32,
