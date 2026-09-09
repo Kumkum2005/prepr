@@ -13,6 +13,7 @@ import {
 import {
   RecordingPresets,
   requestRecordingPermissionsAsync,
+  setAudioModeAsync,
   useAudioRecorder,
 } from 'expo-audio';
 import { ChatMessage, continueInterview } from './src/services/claude';
@@ -65,6 +66,7 @@ export default function App() {
   async function startRecording() {
     const { granted } = await requestRecordingPermissionsAsync();
     if (!granted) return;
+    await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
     await recorder.prepareToRecordAsync();
     recorder.record();
     setRecording(true);
@@ -73,6 +75,7 @@ export default function App() {
   async function stopRecordingAndTranscribe() {
     setRecording(false);
     await recorder.stop();
+    await setAudioModeAsync({ allowsRecording: false });
     const uri = recorder.uri;
     if (!uri) return;
 
