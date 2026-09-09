@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   ActivityIndicator,
+  Alert,
   Button,
   Pressable,
   ScrollView,
@@ -64,27 +65,41 @@ export default function App() {
   }
 
   async function startRecording() {
-    const { granted } = await requestRecordingPermissionsAsync();
-    if (!granted) return;
-    await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
-    await recorder.prepareToRecordAsync();
-    recorder.record();
-    setRecording(true);
+    try {
+      const { granted } = await requestRecordingPermissionsAsync();
+      if (!granted) {
+        Alert.alert(
+          'Microphone permission needed',
+          'Go to your phone Settings > Prepr > Microphone and turn it on.'
+        );
+        return;
+      }
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      setRecording(true);
+    } catch (error) {
+      Alert.alert('Could not start recording', String(error));
+    }
   }
 
   async function stopRecordingAndTranscribe() {
+    if (!recording) return;
     setRecording(false);
-    await recorder.stop();
-    await setAudioModeAsync({ allowsRecording: false });
-    const uri = recorder.uri;
-    if (!uri) return;
-
-    setTranscribing(true);
     try {
+      await recorder.stop();
+      await setAudioModeAsync({ allowsRecording: false });
+      const uri = recorder.uri;
+      if (!uri) {
+        Alert.alert('No recording captured', 'Try holding the button a little longer.');
+        return;
+      }
+
+      setTranscribing(true);
       const text = await transcribeAudio(uri);
       setInput((prev) => (prev ? `${prev} ${text}` : text));
     } catch (error) {
-      setInput((prev) => prev || '');
+      Alert.alert('Transcription failed', String(error));
     } finally {
       setTranscribing(false);
     }

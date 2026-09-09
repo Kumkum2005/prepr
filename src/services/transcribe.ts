@@ -1,5 +1,8 @@
 export async function transcribeAudio(fileUri: string): Promise<string> {
   const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing EXPO_PUBLIC_OPENAI_API_KEY in .env');
+  }
 
   const form = new FormData();
   form.append('file', {
@@ -18,7 +21,8 @@ export async function transcribeAudio(fileUri: string): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`Transcription failed: ${response.status}`);
+    const body = await response.text();
+    throw new Error(`Transcription failed (${response.status}): ${body}`);
   }
 
   const data = await response.json();
