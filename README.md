@@ -20,7 +20,7 @@ text and text-to-speech for a real spoken conversation.
 - [x] Project scaffold
 - [x] Phase 1 — MVP: one behavioral interview mode, text-based Q&A loop with Claude, feedback after each answer
 - [x] Phase 2 — Voice: speech-to-text input, text-to-speech questions
-- [ ] Phase 3 — Accounts & history: Supabase auth, save past sessions
+- [x] Phase 3 — Accounts & history: Supabase auth, save past sessions
 - [ ] Phase 4 — More modes: coding/system-design questions, progress dashboard
 - [ ] Phase 5 — Polish & app store prep: icons, screenshots, privacy policy, store listings
 - [ ] Phase 6 — Submit to App Store & Google Play
