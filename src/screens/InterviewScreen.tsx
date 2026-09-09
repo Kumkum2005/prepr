@@ -16,12 +16,13 @@ import {
   setAudioModeAsync,
   useAudioRecorder,
 } from 'expo-audio';
-import { ChatMessage, continueInterview } from '../services/claude';
+import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
 import { saveSession } from '../services/sessions';
 import { speak, stopSpeaking } from '../services/speech';
 import { transcribeAudio } from '../services/transcribe';
 
 export default function InterviewScreen({ userId }: { userId: string }) {
+  const [mode, setMode] = useState<InterviewMode>('behavioral');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ export default function InterviewScreen({ userId }: { userId: string }) {
   async function sendToInterviewer(history: ChatMessage[]) {
     setLoading(true);
     try {
-      const reply = await continueInterview(history);
+      const reply = await continueInterview(history, mode);
       setMessages([...history, { role: 'assistant', content: reply }]);
       if (voiceOn) speak(reply);
     } catch (error) {
@@ -65,7 +66,7 @@ export default function InterviewScreen({ userId }: { userId: string }) {
   async function endInterview() {
     stopSpeaking();
     try {
-      await saveSession(userId, messages);
+      await saveSession(userId, mode, messages);
     } catch (error) {
       Alert.alert('Could not save session', String(error));
     }
@@ -117,7 +118,23 @@ export default function InterviewScreen({ userId }: { userId: string }) {
 
   return (
     <View style={styles.container}>
-      {!started && <Button title="Start Interview" onPress={startInterview} />}
+      {!started && (
+        <View>
+          <Text style={styles.modeLabel}>Choose interview type</Text>
+          <View style={styles.modeRow}>
+            {INTERVIEW_MODES.map((m) => (
+              <Pressable
+                key={m.id}
+                style={[styles.modeButton, mode === m.id && styles.modeButtonActive]}
+                onPress={() => setMode(m.id)}
+              >
+                <Text style={styles.modeButtonText}>{m.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+          <Button title="Start Interview" onPress={startInterview} />
+        </View>
+      )}
 
       {started && (
         <>
@@ -191,6 +208,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
+  },
+  modeLabel: {
+    color: '#9ca3af',
+    fontSize: 13,
+    marginBottom: 8,
+  },
+  modeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  modeButton: {
+    flex: 1,
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  modeButtonActive: {
+    backgroundColor: '#1d4ed8',
+  },
+  modeButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   chat: {
     flex: 1,
