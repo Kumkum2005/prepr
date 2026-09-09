@@ -4,12 +4,11 @@ export async function transcribeAudio(fileUri: string): Promise<string> {
     throw new Error('Missing EXPO_PUBLIC_OPENAI_API_KEY in .env');
   }
 
+  const fileResponse = await fetch(fileUri);
+  const fileBlob = await fileResponse.blob();
+
   const form = new FormData();
-  form.append('file', {
-    uri: fileUri,
-    name: 'answer.m4a',
-    type: 'audio/m4a',
-  } as unknown as Blob);
+  form.append('file', fileBlob, 'answer.m4a');
   form.append('model', 'whisper-1');
 
   const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
