@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { InterviewMode } from '../services/claude';
 import {
   deleteSession,
   InterviewSession,
@@ -17,6 +18,9 @@ import {
   renameSession,
   setSessionArchived,
 } from '../services/sessions';
+
+type ModeFilter = 'all' | InterviewMode;
+type SortOrder = 'newest' | 'oldest';
 
 export default function HistoryScreen({ userId }: { userId: string }) {
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
@@ -26,6 +30,8 @@ export default function HistoryScreen({ userId }: { userId: string }) {
   const [menuFor, setMenuFor] = useState<InterviewSession | null>(null);
   const [renaming, setRenaming] = useState<InterviewSession | null>(null);
   const [renameText, setRenameText] = useState('');
+  const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
 
   useEffect(() => {
     refresh();
@@ -113,11 +119,18 @@ export default function HistoryScreen({ userId }: { userId: string }) {
     );
   }
 
-  const visibleSessions = sessions.filter((s) => s.archived === showArchived);
   const activeCount = sessions.filter((s) => !s.archived).length;
   const archivedCount = sessions.filter((s) => s.archived).length;
   const behavioralCount = sessions.filter((s) => !s.archived && s.mode === 'behavioral').length;
   const technicalCount = sessions.filter((s) => !s.archived && s.mode === 'technical').length;
+
+  const visibleSessions = sessions
+    .filter((s) => s.archived === showArchived)
+    .filter((s) => modeFilter === 'all' || s.mode === modeFilter)
+    .sort((a, b) => {
+      const diff = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      return sortOrder === 'newest' ? -diff : diff;
+    });
 
   return (
     <View style={styles.container}>
@@ -139,6 +152,30 @@ export default function HistoryScreen({ userId }: { userId: string }) {
           </Text>
         </Pressable>
       )}
+
+      <View style={styles.filterRow}>
+        <View style={styles.filterPills}>
+          {(['all', 'behavioral', 'technical'] as ModeFilter[]).map((f) => (
+            <Pressable
+              key={f}
+              style={[styles.filterPill, modeFilter === f && styles.filterPillActive]}
+              onPress={() => setModeFilter(f)}
+            >
+              <Text style={[styles.filterPillText, modeFilter === f && styles.filterPillTextActive]}>
+                {f === 'all' ? 'All' : f === 'behavioral' ? 'Behavioral' : 'Technical'}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+        <Pressable
+          style={styles.sortButton}
+          onPress={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+        >
+          <Text style={styles.sortButtonText}>
+            {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
+          </Text>
+        </Pressable>
+      </View>
 
       {visibleSessions.length === 0 ? (
         <View style={styles.centered}>
@@ -236,7 +273,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   summary: {
-    backgroundColor: '#1f2937',
+    backgroundColor: 'rgba(59, 130, 246, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(96, 165, 250, 0.35)',
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
@@ -257,6 +296,41 @@ const styles = StyleSheet.create({
   archiveToggleText: {
     color: '#60a5fa',
     fontSize: 13,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  filterPills: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  filterPill: {
+    backgroundColor: '#1f2937',
+    borderRadius: 999,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  filterPillActive: {
+    backgroundColor: '#1d4ed8',
+  },
+  filterPillText: {
+    color: '#9ca3af',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  filterPillTextActive: {
+    color: '#ffffff',
+  },
+  sortButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+  },
+  sortButtonText: {
+    color: '#60a5fa',
+    fontSize: 12,
   },
   card: {
     backgroundColor: '#1f2937',
