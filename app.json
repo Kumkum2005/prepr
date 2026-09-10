@@ -2,6 +2,7 @@
   "expo": {
     "name": "prepr",
     "slug": "prepr",
+    "scheme": "prepr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,7 +28,8 @@
         {
           "microphonePermissionText": "Prepr uses your microphone so you can speak your interview answers."
         }
-      ]
+      ],
+      "expo-web-browser"
     ]
   }
 }

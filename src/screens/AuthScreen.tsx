@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { signIn, signUp } from '../services/auth';
+import { signInWithGoogle } from '../services/googleAuth';
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
@@ -8,6 +9,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleSubmit() {
     setError('');
@@ -22,6 +24,18 @@ export default function AuthScreen() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleGoogleSignIn() {
+    setError('');
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setGoogleLoading(false);
     }
   }
 
@@ -57,6 +71,24 @@ export default function AuthScreen() {
         onPress={handleSubmit}
         disabled={submitting || !email.trim() || !password}
       />
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or</Text>
+        <View style={styles.dividerLine} />
+      </View>
+
+      <Pressable
+        style={styles.googleButton}
+        onPress={handleGoogleSignIn}
+        disabled={googleLoading}
+      >
+        {googleLoading ? (
+          <ActivityIndicator color="#111827" />
+        ) : (
+          <Text style={styles.googleButtonText}>Continue with Google</Text>
+        )}
+      </Pressable>
 
       <Text
         style={styles.switchMode}
@@ -100,5 +132,31 @@ const styles = StyleSheet.create({
     color: '#60a5fa',
     marginTop: 20,
     textAlign: 'center',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#374151',
+  },
+  dividerText: {
+    color: '#6b7280',
+    marginHorizontal: 12,
+    fontSize: 12,
+  },
+  googleButton: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    color: '#111827',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
