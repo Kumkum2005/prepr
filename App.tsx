@@ -5,7 +5,7 @@ import type { Session } from '@supabase/supabase-js';
 import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import InterviewScreen from './src/screens/InterviewScreen';
-import { signOut } from './src/services/auth';
+import ProfileMenu from './src/components/ProfileMenu';
 import { supabase, supabaseConfigured } from './src/services/supabase';
 
 export default function App() {
@@ -59,21 +59,29 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Prepr</Text>
-        <Text style={styles.subtitle}>Mock behavioral interview</Text>
+        <View>
+          <Text style={styles.title}>Prepr</Text>
+          <Text style={styles.subtitle}>Mock behavioral interview</Text>
+        </View>
+        <ProfileMenu email={session.user.email ?? ''} />
       </View>
 
-      <View style={styles.headerButtons}>
+      <View style={styles.tabBar}>
         <Pressable
-          style={styles.headerButton}
-          onPress={() => setView(view === 'interview' ? 'history' : 'interview')}
+          style={[styles.tab, view === 'interview' && styles.tabActive]}
+          onPress={() => setView('interview')}
         >
-          <Text style={styles.headerButtonText}>
-            {view === 'interview' ? 'History' : 'Interview'}
+          <Text style={[styles.tabText, view === 'interview' && styles.tabTextActive]}>
+            Interview
           </Text>
         </Pressable>
-        <Pressable style={styles.headerButton} onPress={() => signOut()}>
-          <Text style={styles.headerButtonText}>Sign Out</Text>
+        <Pressable
+          style={[styles.tab, view === 'history' && styles.tabActive]}
+          onPress={() => setView('history')}
+        >
+          <Text style={[styles.tabText, view === 'history' && styles.tabTextActive]}>
+            History
+          </Text>
         </Pressable>
       </View>
 
@@ -100,23 +108,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerRow: {
-    marginBottom: 12,
-  },
-  headerButtons: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  headerButton: {
+  tabBar: {
+    flexDirection: 'row',
     backgroundColor: '#1f2937',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
+    borderRadius: 10,
+    padding: 4,
+    marginBottom: 16,
   },
-  headerButtonText: {
-    color: '#e5e7eb',
-    fontSize: 13,
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  tabActive: {
+    backgroundColor: '#1d4ed8',
+  },
+  tabText: {
+    color: '#9ca3af',
+    fontSize: 14,
     fontWeight: '600',
+  },
+  tabTextActive: {
+    color: '#ffffff',
   },
   title: {
     fontSize: 32,
