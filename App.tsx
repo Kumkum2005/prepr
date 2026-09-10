@@ -6,12 +6,14 @@ import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import InterviewScreen from './src/screens/InterviewScreen';
 import ProfileMenu from './src/components/ProfileMenu';
+import { InterviewSession } from './src/services/sessions';
 import { supabase, supabaseConfigured } from './src/services/supabase';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [view, setView] = useState<'interview' | 'history'>('interview');
+  const [resumeSession, setResumeSession] = useState<InterviewSession | null>(null);
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -85,11 +87,23 @@ export default function App() {
         </Pressable>
       </View>
 
-      {view === 'interview' ? (
-        <InterviewScreen userId={session.user.id} />
-      ) : (
-        <HistoryScreen userId={session.user.id} />
-      )}
+      <View style={{ flex: 1, display: view === 'interview' ? 'flex' : 'none' }}>
+        <InterviewScreen
+          userId={session.user.id}
+          resumeSession={resumeSession}
+          onResumed={() => setResumeSession(null)}
+        />
+      </View>
+      <View style={{ flex: 1, display: view === 'history' ? 'flex' : 'none' }}>
+        <HistoryScreen
+          userId={session.user.id}
+          visible={view === 'history'}
+          onContinueSession={(s) => {
+            setResumeSession(s);
+            setView('interview');
+          }}
+        />
+      </View>
 
       <StatusBar style="light" />
     </View>

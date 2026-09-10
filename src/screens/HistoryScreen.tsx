@@ -21,7 +21,15 @@ import {
 
 type ModeFilter = 'all' | InterviewMode;
 
-export default function HistoryScreen({ userId }: { userId: string }) {
+export default function HistoryScreen({
+  userId,
+  visible,
+  onContinueSession,
+}: {
+  userId: string;
+  visible: boolean;
+  onContinueSession: (session: InterviewSession) => void;
+}) {
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -30,10 +38,11 @@ export default function HistoryScreen({ userId }: { userId: string }) {
   const [renaming, setRenaming] = useState<InterviewSession | null>(null);
   const [renameText, setRenameText] = useState('');
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
+  const [detailSession, setDetailSession] = useState<InterviewSession | null>(null);
 
   useEffect(() => {
-    refresh();
-  }, [userId]);
+    if (visible) refresh();
+  }, [userId, visible]);
 
   function refresh() {
     setLoading(true);
@@ -170,7 +179,7 @@ export default function HistoryScreen({ userId }: { userId: string }) {
       ) : (
         <ScrollView>
           {visibleSessions.map((session) => (
-            <View key={session.id} style={styles.card}>
+            <Pressable key={session.id} style={styles.card} onPress={() => setDetailSession(session)}>
               <View style={styles.cardHeader}>
                 <Text style={styles.date}>{new Date(session.created_at).toLocaleString()}</Text>
                 <View style={styles.cardHeaderRight}>
@@ -184,7 +193,7 @@ export default function HistoryScreen({ userId }: { userId: string }) {
                 {sessionLabel(session)}
               </Text>
               <Text style={styles.count}>{session.transcript.length} messages</Text>
-            </View>
+            </Pressable>
           ))}
         </ScrollView>
       )}
@@ -234,6 +243,59 @@ export default function HistoryScreen({ userId }: { userId: string }) {
             </View>
           </View>
         </View>
+      </Modal>
+
+      <Modal
+        visible={!!detailSession}
+        animationType="slide"
+        onRequestClose={() => setDetailSession(null)}
+      >
+        {detailSession && (
+          <View style={styles.detailContainer}>
+            <View style={styles.detailHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.detailTitle} numberOfLines={1}>
+                  {sessionLabel(detailSession)}
+                </Text>
+                <Text style={styles.date}>
+                  {new Date(detailSession.created_at).toLocaleString()} · {detailSession.mode}
+                </Text>
+              </View>
+              <Pressable onPress={() => setDetailSession(null)} hitSlop={8}>
+                <Text style={styles.closeText}>Close</Text>
+              </Pressable>
+            </View>
+
+            <ScrollView style={styles.detailChat}>
+              {detailSession.transcript
+                .filter((m) => m.content !== 'Start the interview.')
+                .map((m, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.bubble,
+                      m.role === 'assistant' ? styles.assistantBubble : styles.userBubble,
+                    ]}
+                  >
+                    <Text style={styles.bubbleLabel}>
+                      {m.role === 'assistant' ? 'Interviewer' : 'You'}
+                    </Text>
+                    <Text style={styles.bubbleText}>{m.content}</Text>
+                  </View>
+                ))}
+            </ScrollView>
+
+            <Pressable
+              style={styles.continueButton}
+              onPress={() => {
+                onContinueSession(detailSession);
+                setDetailSession(null);
+              }}
+            >
+              <Text style={styles.continueButtonText}>Continue this session</Text>
+            </Pressable>
+          </View>
+        )}
       </Modal>
     </View>
   );
@@ -403,5 +465,65 @@ const styles = StyleSheet.create({
   renameButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
+  },
+  detailContainer: {
+    flex: 1,
+    backgroundColor: '#111827',
+    paddingTop: 60,
+    paddingHorizontal: 20,
+  },
+  detailHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  detailTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  closeText: {
+    color: '#60a5fa',
+    fontSize: 14,
+    marginLeft: 12,
+  },
+  detailChat: {
+    flex: 1,
+    marginBottom: 12,
+  },
+  bubble: {
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+  },
+  assistantBubble: {
+    backgroundColor: '#1f2937',
+  },
+  userBubble: {
+    backgroundColor: '#1d4ed8',
+  },
+  bubbleLabel: {
+    color: '#9ca3af',
+    fontSize: 11,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  bubbleText: {
+    color: '#ffffff',
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  continueButton: {
+    backgroundColor: '#4f46e5',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  continueButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

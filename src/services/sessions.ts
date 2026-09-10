@@ -27,6 +27,11 @@ export async function listSessions(userId: string): Promise<InterviewSession[]> 
   return data as InterviewSession[];
 }
 
+export async function updateSessionTranscript(id: string, transcript: ChatMessage[]) {
+  const { error } = await supabase.from('sessions').update({ transcript }).eq('id', id);
+  if (error) throw error;
+}
+
 export async function renameSession(id: string, title: string) {
   const { error } = await supabase.from('sessions').update({ title }).eq('id', id);
   if (error) throw error;

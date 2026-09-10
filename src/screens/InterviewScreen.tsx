@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -17,11 +17,19 @@ import {
   useAudioRecorder,
 } from 'expo-audio';
 import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
-import { saveSession } from '../services/sessions';
+import { InterviewSession, saveSession, updateSessionTranscript } from '../services/sessions';
 import { speak, stopSpeaking } from '../services/speech';
 import { transcribeAudio } from '../services/transcribe';
 
-export default function InterviewScreen({ userId }: { userId: string }) {
+export default function InterviewScreen({
+  userId,
+  resumeSession,
+  onResumed,
+}: {
+  userId: string;
+  resumeSession: InterviewSession | null;
+  onResumed: () => void;
+}) {
   const [mode, setMode] = useState<InterviewMode>('behavioral');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -30,7 +38,17 @@ export default function InterviewScreen({ userId }: { userId: string }) {
   const [voiceOn, setVoiceOn] = useState(true);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+
+  useEffect(() => {
+    if (!resumeSession) return;
+    setMode(resumeSession.mode);
+    setMessages(resumeSession.transcript);
+    setSessionId(resumeSession.id);
+    setStarted(true);
+    onResumed();
+  }, [resumeSession]);
 
   async function sendToInterviewer(history: ChatMessage[]) {
     setLoading(true);
@@ -50,6 +68,7 @@ export default function InterviewScreen({ userId }: { userId: string }) {
 
   function startInterview() {
     setStarted(true);
+    setSessionId(null);
     const history: ChatMessage[] = [{ role: 'user', content: 'Start the interview.' }];
     setMessages(history);
     sendToInterviewer(history);
@@ -66,13 +85,18 @@ export default function InterviewScreen({ userId }: { userId: string }) {
   async function endInterview() {
     stopSpeaking();
     try {
-      await saveSession(userId, mode, messages);
+      if (sessionId) {
+        await updateSessionTranscript(sessionId, messages);
+      } else {
+        await saveSession(userId, mode, messages);
+      }
     } catch (error) {
       Alert.alert('Could not save session', String(error));
     }
     setStarted(false);
     setMessages([]);
     setInput('');
+    setSessionId(null);
   }
 
   async function startRecording() {
