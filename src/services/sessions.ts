@@ -8,27 +8,37 @@ export type InterviewSession = {
   title: string | null;
   archived: boolean;
   transcript: ChatMessage[];
+  images: string[];
 };
 
-export async function saveSession(userId: string, mode: InterviewMode, transcript: ChatMessage[]) {
+export async function saveSession(
+  userId: string,
+  mode: InterviewMode,
+  transcript: ChatMessage[],
+  images: string[]
+) {
   const { error } = await supabase
     .from('sessions')
-    .insert({ user_id: userId, mode, transcript });
+    .insert({ user_id: userId, mode, transcript, images });
   if (error) throw error;
 }
 
 export async function listSessions(userId: string): Promise<InterviewSession[]> {
   const { data, error } = await supabase
     .from('sessions')
-    .select('id, created_at, mode, title, archived, transcript')
+    .select('id, created_at, mode, title, archived, transcript, images')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data as InterviewSession[];
 }
 
-export async function updateSessionTranscript(id: string, transcript: ChatMessage[]) {
-  const { error } = await supabase.from('sessions').update({ transcript }).eq('id', id);
+export async function updateSessionTranscript(
+  id: string,
+  transcript: ChatMessage[],
+  images: string[]
+) {
+  const { error } = await supabase.from('sessions').update({ transcript, images }).eq('id', id);
   if (error) throw error;
 }
 

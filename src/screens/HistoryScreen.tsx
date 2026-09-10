@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -285,6 +286,18 @@ export default function HistoryScreen({
                 ))}
             </ScrollView>
 
+            {detailSession.images.length > 0 && (
+              <ScrollView
+                horizontal
+                style={styles.detailImageRow}
+                showsHorizontalScrollIndicator={false}
+              >
+                {detailSession.images.map((url) => (
+                  <Image key={url} source={{ uri: url }} style={styles.detailThumbnail} />
+                ))}
+              </ScrollView>
+            )}
+
             <Pressable
               style={styles.continueButton}
               onPress={() => {
@@ -513,6 +526,16 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 15,
     lineHeight: 21,
+  },
+  detailImageRow: {
+    marginBottom: 12,
+  },
+  detailThumbnail: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    marginRight: 8,
+    backgroundColor: '#1f2937',
   },
   continueButton: {
     backgroundColor: '#4f46e5',

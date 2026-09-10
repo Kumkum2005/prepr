@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Button,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -17,6 +18,7 @@ import {
   useAudioRecorder,
 } from 'expo-audio';
 import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
+import { pickImage, uploadSessionImage } from '../services/images';
 import { InterviewSession, saveSession, updateSessionTranscript } from '../services/sessions';
 import { speak, stopSpeaking } from '../services/speech';
 import { transcribeAudio } from '../services/transcribe';
@@ -39,12 +41,15 @@ export default function InterviewScreen({
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
 
   useEffect(() => {
     if (!resumeSession) return;
     setMode(resumeSession.mode);
     setMessages(resumeSession.transcript);
+    setImages(resumeSession.images);
     setSessionId(resumeSession.id);
     setStarted(true);
     onResumed();
@@ -69,6 +74,7 @@ export default function InterviewScreen({
   function startInterview() {
     setStarted(true);
     setSessionId(null);
+    setImages([]);
     const history: ChatMessage[] = [{ role: 'user', content: 'Start the interview.' }];
     setMessages(history);
     sendToInterviewer(history);
@@ -86,9 +92,9 @@ export default function InterviewScreen({
     stopSpeaking();
     try {
       if (sessionId) {
-        await updateSessionTranscript(sessionId, messages);
+        await updateSessionTranscript(sessionId, messages, images);
       } else {
-        await saveSession(userId, mode, messages);
+        await saveSession(userId, mode, messages, images);
       }
     } catch (error) {
       Alert.alert('Could not save session', String(error));
@@ -97,6 +103,33 @@ export default function InterviewScreen({
     setMessages([]);
     setInput('');
     setSessionId(null);
+    setImages([]);
+  }
+
+  function addImage() {
+    Alert.alert('Attach photo', undefined, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Take Photo', onPress: () => handlePickImage('camera') },
+      { text: 'Choose from Library', onPress: () => handlePickImage('library') },
+    ]);
+  }
+
+  async function handlePickImage(source: 'camera' | 'library') {
+    try {
+      const uri = await pickImage(source);
+      if (!uri) return;
+      setUploadingImage(true);
+      const url = await uploadSessionImage(userId, uri);
+      setImages((prev) => [...prev, url]);
+    } catch (error) {
+      Alert.alert('Could not attach photo', error instanceof Error ? error.message : String(error));
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
+  function removeImage(index: number) {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function startRecording() {
@@ -194,6 +227,28 @@ export default function InterviewScreen({
             {loading && <ActivityIndicator color="#ffffff" style={{ marginTop: 12 }} />}
           </ScrollView>
 
+          {(images.length > 0 || uploadingImage) && (
+            <ScrollView horizontal style={styles.imageRow} showsHorizontalScrollIndicator={false}>
+              {images.map((url, i) => (
+                <View key={url} style={styles.thumbnailWrap}>
+                  <Image source={{ uri: url }} style={styles.thumbnail} />
+                  <Pressable style={styles.thumbnailRemove} onPress={() => removeImage(i)}>
+                    <Text style={styles.thumbnailRemoveText}>×</Text>
+                  </Pressable>
+                </View>
+              ))}
+              {uploadingImage && (
+                <View style={[styles.thumbnail, styles.thumbnailLoading]}>
+                  <ActivityIndicator color="#ffffff" size="small" />
+                </View>
+              )}
+            </ScrollView>
+          )}
+
+          <Pressable style={styles.addPhotoButton} onPress={addImage} disabled={uploadingImage}>
+            <Text style={styles.addPhotoText}>📷 Attach Photo</Text>
+          </Pressable>
+
           <View style={styles.inputRow}>
             <TextInput
               style={styles.input}
@@ -290,6 +345,51 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 15,
     lineHeight: 21,
+  },
+  imageRow: {
+    marginBottom: 10,
+  },
+  thumbnailWrap: {
+    marginRight: 8,
+  },
+  thumbnail: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+    backgroundColor: '#1f2937',
+  },
+  thumbnailLoading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  thumbnailRemove: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    backgroundColor: '#dc2626',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  thumbnailRemoveText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '700',
+    lineHeight: 14,
+  },
+  addPhotoButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  addPhotoText: {
+    color: '#e5e7eb',
+    fontSize: 13,
+    fontWeight: '600',
   },
   inputRow: {
     marginBottom: 20,

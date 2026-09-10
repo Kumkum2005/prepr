@@ -29,7 +29,14 @@
           "microphonePermissionText": "Prepr uses your microphone so you can speak your interview answers."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Prepr uses your photo library so you can attach images to interview sessions.",
+          "cameraPermission": "Prepr uses your camera so you can attach photos to interview sessions."
+        }
+      ]
     ]
   }
 }
