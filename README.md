@@ -21,7 +21,7 @@ text and text-to-speech for a real spoken conversation.
 - [x] Phase 1 — MVP: one behavioral interview mode, text-based Q&A loop with Claude, feedback after each answer
 - [x] Phase 2 — Voice: speech-to-text input, text-to-speech questions
 - [x] Phase 3 — Accounts & history: Supabase auth, save past sessions
-- [ ] Phase 4 — More modes: coding/system-design questions, progress dashboard
+- [x] Phase 4 — More modes: coding/system-design questions, progress dashboard
 - [ ] Phase 5 — Polish & app store prep: icons, screenshots, privacy policy, store listings
 - [ ] Phase 6 — Submit to App Store & Google Play
 
@@ -33,6 +33,10 @@ text and text-to-speech for a real spoken conversation.
   link tries to open a website that doesn't exist). Before real users sign
   up, set up a proper deep link (e.g. `prepr://`) so confirmation opens
   back into the app instead of a browser.
+- Google Sign-In is coded but not fully working yet — it needs a
+  development build (not Expo Go) to test the login redirect properly,
+  which needs an Apple Developer account for iOS. Revisit alongside Apple
+  Sign-In once that account exists.
 
 ## Getting started
 
