@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
@@ -59,17 +59,22 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.title}>Prepr</Text>
-          <Text style={styles.subtitle}>Mock behavioral interview</Text>
-        </View>
-        <View style={styles.headerButtons}>
-          <Button
-            title={view === 'interview' ? 'History' : 'Interview'}
-            onPress={() => setView(view === 'interview' ? 'history' : 'interview')}
-          />
-          <Button title="Sign Out" onPress={() => signOut()} />
-        </View>
+        <Text style={styles.title}>Prepr</Text>
+        <Text style={styles.subtitle}>Mock behavioral interview</Text>
+      </View>
+
+      <View style={styles.headerButtons}>
+        <Pressable
+          style={styles.headerButton}
+          onPress={() => setView(view === 'interview' ? 'history' : 'interview')}
+        >
+          <Text style={styles.headerButtonText}>
+            {view === 'interview' ? 'History' : 'Interview'}
+          </Text>
+        </Pressable>
+        <Pressable style={styles.headerButton} onPress={() => signOut()}>
+          <Text style={styles.headerButtonText}>Sign Out</Text>
+        </Pressable>
       </View>
 
       {view === 'interview' ? (
@@ -95,14 +100,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: 12,
   },
   headerButtons: {
     flexDirection: 'row',
     gap: 8,
+    marginBottom: 16,
+  },
+  headerButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  headerButtonText: {
+    color: '#e5e7eb',
+    fontSize: 13,
+    fontWeight: '600',
   },
   title: {
     fontSize: 32,
