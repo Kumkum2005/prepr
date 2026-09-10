@@ -20,7 +20,6 @@ import {
 } from '../services/sessions';
 
 type ModeFilter = 'all' | InterviewMode;
-type SortOrder = 'newest' | 'oldest';
 
 export default function HistoryScreen({ userId }: { userId: string }) {
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
@@ -31,7 +30,6 @@ export default function HistoryScreen({ userId }: { userId: string }) {
   const [renaming, setRenaming] = useState<InterviewSession | null>(null);
   const [renameText, setRenameText] = useState('');
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
 
   useEffect(() => {
     refresh();
@@ -126,11 +124,7 @@ export default function HistoryScreen({ userId }: { userId: string }) {
 
   const visibleSessions = sessions
     .filter((s) => s.archived === showArchived)
-    .filter((s) => modeFilter === 'all' || s.mode === modeFilter)
-    .sort((a, b) => {
-      const diff = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      return sortOrder === 'newest' ? -diff : diff;
-    });
+    .filter((s) => modeFilter === 'all' || s.mode === modeFilter);
 
   return (
     <View style={styles.container}>
@@ -153,28 +147,18 @@ export default function HistoryScreen({ userId }: { userId: string }) {
         </Pressable>
       )}
 
-      <View style={styles.filterRow}>
-        <View style={styles.filterPills}>
-          {(['all', 'behavioral', 'technical'] as ModeFilter[]).map((f) => (
-            <Pressable
-              key={f}
-              style={[styles.filterPill, modeFilter === f && styles.filterPillActive]}
-              onPress={() => setModeFilter(f)}
-            >
-              <Text style={[styles.filterPillText, modeFilter === f && styles.filterPillTextActive]}>
-                {f === 'all' ? 'All' : f === 'behavioral' ? 'Behavioral' : 'Technical'}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        <Pressable
-          style={styles.sortButton}
-          onPress={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
-        >
-          <Text style={styles.sortButtonText}>
-            {sortOrder === 'newest' ? 'Newest first' : 'Oldest first'}
-          </Text>
-        </Pressable>
+      <View style={styles.filterPills}>
+        {(['all', 'behavioral', 'technical'] as ModeFilter[]).map((f) => (
+          <Pressable
+            key={f}
+            style={[styles.filterPill, modeFilter === f && styles.filterPillActive]}
+            onPress={() => setModeFilter(f)}
+          >
+            <Text style={[styles.filterPillText, modeFilter === f && styles.filterPillTextActive]}>
+              {f === 'all' ? 'All' : f === 'behavioral' ? 'Behavioral' : 'Technical'}
+            </Text>
+          </Pressable>
+        ))}
       </View>
 
       {visibleSessions.length === 0 ? (
@@ -297,15 +281,10 @@ const styles = StyleSheet.create({
     color: '#60a5fa',
     fontSize: 13,
   },
-  filterRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
   filterPills: {
     flexDirection: 'row',
     gap: 6,
+    marginBottom: 12,
   },
   filterPill: {
     backgroundColor: '#1f2937',
@@ -323,14 +302,6 @@ const styles = StyleSheet.create({
   },
   filterPillTextActive: {
     color: '#ffffff',
-  },
-  sortButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-  },
-  sortButtonText: {
-    color: '#60a5fa',
-    fontSize: 12,
   },
   card: {
     backgroundColor: '#1f2937',

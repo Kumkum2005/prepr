@@ -119,7 +119,7 @@ export default function InterviewScreen({ userId }: { userId: string }) {
   return (
     <View style={styles.container}>
       {!started && (
-        <View>
+        <View style={styles.modeScreen}>
           <Text style={styles.modeLabel}>Choose interview type</Text>
           <View style={styles.modeRow}>
             {INTERVIEW_MODES.map((m) => (
@@ -209,25 +209,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
+  modeScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   modeLabel: {
     color: '#9ca3af',
     fontSize: 13,
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
   },
   modeRow: {
     flexDirection: 'row',
+    justifyContent: 'center',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   modeButton: {
-    flex: 1,
     backgroundColor: '#1f2937',
     borderRadius: 8,
     paddingVertical: 10,
+    paddingHorizontal: 20,
     alignItems: 'center',
   },
   modeButtonActive: {
-    backgroundColor: '#1d4ed8',
+    backgroundColor: '#4f46e5',
   },
   modeButtonText: {
     color: '#ffffff',
