@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import {
   ActivityIndicator,
@@ -28,6 +28,20 @@ export default function EditProfileScreen({
   const [newPassword, setNewPassword] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!visible) return;
+    setFullName(user.user_metadata?.full_name ?? '');
+    setAvatarUrl(user.user_metadata?.avatar_url);
+    setNewPassword('');
+  }, [visible, user]);
+
+  function handleClose() {
+    setFullName(user.user_metadata?.full_name ?? '');
+    setAvatarUrl(user.user_metadata?.avatar_url);
+    setNewPassword('');
+    onClose();
+  }
 
   function changeAvatar() {
     Alert.alert('Change photo', undefined, [
@@ -75,11 +89,11 @@ export default function EditProfileScreen({
   const initial = (fullName || user.email || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Edit Profile</Text>
-          <Pressable onPress={onClose} hitSlop={8}>
+          <Pressable onPress={handleClose} hitSlop={8}>
             <Text style={styles.closeText}>Close</Text>
           </Pressable>
         </View>
