@@ -37,6 +37,11 @@ text and text-to-speech for a real spoken conversation.
   development build (not Expo Go) to test the login redirect properly,
   which needs an Apple Developer account for iOS. Revisit alongside Apple
   Sign-In once that account exists.
+- Settings currently offers "Delete All My Data" (sessions + photos) but
+  not full account deletion (removing the login itself). Apple requires
+  in-app account deletion for App Store approval if account creation is
+  offered in-app — this needs a Supabase Edge Function (the client key
+  can't delete auth users directly). Build before Phase 6 submission.
 
 ## Getting started
 
