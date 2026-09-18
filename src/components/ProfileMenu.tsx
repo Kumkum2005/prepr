@@ -1,22 +1,19 @@
 import { useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { Alert, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { signOut } from '../services/auth';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 export default function ProfileMenu({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const fullName: string | undefined = user.user_metadata?.full_name;
   const avatarUrl: string | undefined = user.user_metadata?.avatar_url;
   const email = user.email ?? '';
   const initial = (fullName || email || '?').trim().charAt(0).toUpperCase();
-
-  function comingSoon(feature: string) {
-    setOpen(false);
-    Alert.alert(feature, 'Coming soon.');
-  }
 
   return (
     <>
@@ -46,7 +43,13 @@ export default function ProfileMenu({ user }: { user: User }) {
             >
               <Text style={styles.menuItemText}>Edit Profile</Text>
             </Pressable>
-            <Pressable style={styles.menuItem} onPress={() => comingSoon('Settings')}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => {
+                setOpen(false);
+                setSettingsOpen(true);
+              }}
+            >
               <Text style={styles.menuItemText}>Settings</Text>
             </Pressable>
             <View style={styles.divider} />
@@ -64,6 +67,11 @@ export default function ProfileMenu({ user }: { user: User }) {
       </Modal>
 
       <EditProfileScreen visible={editing} user={user} onClose={() => setEditing(false)} />
+      <SettingsScreen
+        visible={settingsOpen}
+        userId={user.id}
+        onClose={() => setSettingsOpen(false)}
+      />
     </>
   );
 }

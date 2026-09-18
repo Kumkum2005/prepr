@@ -19,6 +19,7 @@ import {
 } from 'expo-audio';
 import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
 import { pickImage, uploadImage } from '../services/images';
+import { getVoiceDefault } from '../services/preferences';
 import { InterviewSession, saveSession, updateSessionTranscript } from '../services/sessions';
 import { speak, stopSpeaking } from '../services/speech';
 import { transcribeAudio } from '../services/transcribe';
@@ -44,6 +45,10 @@ export default function InterviewScreen({
   const [images, setImages] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+
+  useEffect(() => {
+    getVoiceDefault().then(setVoiceOn);
+  }, []);
 
   useEffect(() => {
     if (!resumeSession) return;

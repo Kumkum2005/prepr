@@ -56,3 +56,19 @@ export async function deleteSession(id: string) {
   const { error } = await supabase.from('sessions').delete().eq('id', id);
   if (error) throw error;
 }
+
+export async function deleteAllUserData(userId: string) {
+  const { error: rowsError } = await supabase.from('sessions').delete().eq('user_id', userId);
+  if (rowsError) throw rowsError;
+
+  const { data: files, error: listError } = await supabase.storage
+    .from('session-images')
+    .list(userId);
+  if (listError) throw listError;
+
+  if (files && files.length > 0) {
+    const paths = files.map((f) => `${userId}/${f.name}`);
+    const { error: removeError } = await supabase.storage.from('session-images').remove(paths);
+    if (removeError) throw removeError;
+  }
+}
