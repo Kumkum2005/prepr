@@ -18,7 +18,7 @@ import {
   useAudioRecorder,
 } from 'expo-audio';
 import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
-import { pickImage, uploadSessionImage } from '../services/images';
+import { pickImage, uploadImage } from '../services/images';
 import { InterviewSession, saveSession, updateSessionTranscript } from '../services/sessions';
 import { speak, stopSpeaking } from '../services/speech';
 import { transcribeAudio } from '../services/transcribe';
@@ -119,7 +119,7 @@ export default function InterviewScreen({
       const uri = await pickImage(source);
       if (!uri) return;
       setUploadingImage(true);
-      const url = await uploadSessionImage(userId, uri);
+      const url = await uploadImage(userId, uri);
       setImages((prev) => [...prev, url]);
     } catch (error) {
       Alert.alert('Could not attach photo', error instanceof Error ? error.message : String(error));

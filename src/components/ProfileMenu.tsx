@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import type { User } from '@supabase/supabase-js';
+import { Alert, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { signOut } from '../services/auth';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
-export default function ProfileMenu({ email }: { email: string }) {
+export default function ProfileMenu({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
-  const initial = email.trim().charAt(0).toUpperCase() || '?';
+  const [editing, setEditing] = useState(false);
+
+  const fullName: string | undefined = user.user_metadata?.full_name;
+  const avatarUrl: string | undefined = user.user_metadata?.avatar_url;
+  const email = user.email ?? '';
+  const initial = (fullName || email || '?').trim().charAt(0).toUpperCase();
 
   function comingSoon(feature: string) {
     setOpen(false);
@@ -13,16 +20,30 @@ export default function ProfileMenu({ email }: { email: string }) {
 
   return (
     <>
-      <Pressable style={styles.avatar} onPress={() => setOpen(true)}>
-        <Text style={styles.avatarText}>{initial}</Text>
+      <Pressable style={styles.avatarButton} onPress={() => setOpen(true)}>
+        {avatarUrl ? (
+          <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+        ) : (
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initial}</Text>
+          </View>
+        )}
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
           <View style={styles.menu}>
-            <Text style={styles.email} numberOfLines={1}>{email}</Text>
+            <Text style={styles.email} numberOfLines={1}>
+              {fullName || email}
+            </Text>
 
-            <Pressable style={styles.menuItem} onPress={() => comingSoon('Edit Profile')}>
+            <Pressable
+              style={styles.menuItem}
+              onPress={() => {
+                setOpen(false);
+                setEditing(true);
+              }}
+            >
               <Text style={styles.menuItemText}>Edit Profile</Text>
             </Pressable>
             <Pressable style={styles.menuItem} onPress={() => comingSoon('Settings')}>
@@ -41,11 +62,17 @@ export default function ProfileMenu({ email }: { email: string }) {
           </View>
         </Pressable>
       </Modal>
+
+      <EditProfileScreen visible={editing} user={user} onClose={() => setEditing(false)} />
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  avatarButton: {
+    width: 36,
+    height: 36,
+  },
   avatar: {
     width: 36,
     height: 36,

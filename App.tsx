@@ -65,7 +65,7 @@ export default function App() {
           <Text style={styles.title}>Prepr</Text>
           <Text style={styles.subtitle}>Mock behavioral interview</Text>
         </View>
-        <ProfileMenu email={session.user.email ?? ''} />
+        <ProfileMenu user={session.user} />
       </View>
 
       <View style={styles.tabBar}>

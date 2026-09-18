@@ -24,7 +24,7 @@ export async function pickImage(source: 'camera' | 'library'): Promise<string | 
   return result.assets[0].uri;
 }
 
-export async function uploadSessionImage(userId: string, localUri: string): Promise<string> {
+export async function uploadImage(userId: string, localUri: string): Promise<string> {
   const response = await fetch(localUri);
   const blob = await response.blob();
 
