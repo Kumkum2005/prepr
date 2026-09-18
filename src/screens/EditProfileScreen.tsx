@@ -6,12 +6,13 @@ import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { updatePassword, updateProfile } from '../services/auth';
+import { signIn, updatePassword, updateProfile } from '../services/auth';
 import { pickImage, uploadImage } from '../services/images';
 
 export default function EditProfileScreen({
@@ -25,21 +26,31 @@ export default function EditProfileScreen({
 }) {
   const [fullName, setFullName] = useState(user.user_metadata?.full_name ?? '');
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(user.user_metadata?.avatar_url);
-  const [newPassword, setNewPassword] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (!visible) return;
     setFullName(user.user_metadata?.full_name ?? '');
     setAvatarUrl(user.user_metadata?.avatar_url);
-    setNewPassword('');
+    resetPasswordFields();
   }, [visible, user]);
+
+  function resetPasswordFields() {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  }
 
   function handleClose() {
     setFullName(user.user_metadata?.full_name ?? '');
     setAvatarUrl(user.user_metadata?.avatar_url);
-    setNewPassword('');
+    resetPasswordFields();
     onClose();
   }
 
@@ -69,20 +80,50 @@ export default function EditProfileScreen({
     setSaving(true);
     try {
       await updateProfile({ fullName: fullName.trim(), avatarUrl });
-      if (newPassword.trim()) {
-        if (newPassword.trim().length < 6) {
-          Alert.alert('Password too short', 'Use at least 6 characters.');
-          setSaving(false);
-          return;
-        }
-        await updatePassword(newPassword.trim());
-      }
-      setNewPassword('');
       onClose();
     } catch (error) {
       Alert.alert('Could not save changes', error instanceof Error ? error.message : String(error));
     } finally {
       setSaving(false);
+    }
+  }
+
+  function handleChangePassword() {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert('Missing info', 'Fill in your current password, new password, and confirmation.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert('Password too short', 'Use at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Passwords don't match", 'New password and confirmation must be the same.');
+      return;
+    }
+
+    Alert.alert('Change password?', 'You will need this new password next time you log in.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Change Password', onPress: submitPasswordChange },
+    ]);
+  }
+
+  async function submitPasswordChange() {
+    setChangingPassword(true);
+    try {
+      if (!user.email) throw new Error('No email on this account.');
+      await signIn(user.email, currentPassword);
+      await updatePassword(newPassword);
+      resetPasswordFields();
+      Alert.alert('Password changed', 'Your password has been updated.');
+    } catch (error) {
+      Alert.alert(
+        'Could not change password',
+        'Your current password may be incorrect. ' +
+          (error instanceof Error ? error.message : String(error))
+      );
+    } finally {
+      setChangingPassword(false);
     }
   }
 
@@ -98,6 +139,7 @@ export default function EditProfileScreen({
           </Pressable>
         </View>
 
+        <ScrollView>
         <Pressable style={styles.avatarWrap} onPress={changeAvatar} disabled={uploadingAvatar}>
           {uploadingAvatar ? (
             <View style={styles.avatar}>
@@ -125,16 +167,6 @@ export default function EditProfileScreen({
         <Text style={styles.label}>Email</Text>
         <Text style={styles.emailText}>{user.email}</Text>
 
-        <Text style={styles.label}>New password (optional)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Leave blank to keep current password"
-          placeholderTextColor="#6b7280"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-        />
-
         <Pressable
           style={styles.saveButton}
           onPress={handleSave}
@@ -142,6 +174,50 @@ export default function EditProfileScreen({
         >
           <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
         </Pressable>
+
+        <View style={styles.sectionDivider} />
+        <Text style={styles.sectionTitle}>Change Password</Text>
+
+        <Text style={styles.label}>Current password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Current password"
+          placeholderTextColor="#6b7280"
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+          secureTextEntry
+        />
+
+        <Text style={styles.label}>New password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="New password"
+          placeholderTextColor="#6b7280"
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry
+        />
+
+        <Text style={styles.label}>Confirm new password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Re-type new password"
+          placeholderTextColor="#6b7280"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+
+        <Pressable
+          style={styles.passwordButton}
+          onPress={handleChangePassword}
+          disabled={changingPassword}
+        >
+          <Text style={styles.saveButtonText}>
+            {changingPassword ? 'Changing...' : 'Change Password'}
+          </Text>
+        </Pressable>
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -219,5 +295,24 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 15,
     fontWeight: '600',
+  },
+  sectionDivider: {
+    height: 1,
+    backgroundColor: '#1f2937',
+    marginVertical: 28,
+  },
+  sectionTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  passwordButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 40,
   },
 });
