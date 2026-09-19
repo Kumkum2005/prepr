@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Constants from 'expo-constants';
-import { Alert, Modal, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
-import { getVoiceDefault, setVoiceDefault } from '../services/preferences';
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { deleteAllUserData } from '../services/sessions';
 
 export default function SettingsScreen({
@@ -13,18 +12,7 @@ export default function SettingsScreen({
   userId: string;
   onClose: () => void;
 }) {
-  const [voiceDefault, setVoiceDefaultState] = useState(true);
   const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    if (!visible) return;
-    getVoiceDefault().then(setVoiceDefaultState);
-  }, [visible]);
-
-  async function toggleVoiceDefault(value: boolean) {
-    setVoiceDefaultState(value);
-    await setVoiceDefault(value);
-  }
 
   function confirmDeleteAllData() {
     Alert.alert(
@@ -61,13 +49,6 @@ export default function SettingsScreen({
           </Pressable>
         </View>
 
-        <Text style={styles.sectionTitle}>Preferences</Text>
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>Speak questions aloud by default</Text>
-          <Switch value={voiceDefault} onValueChange={toggleVoiceDefault} />
-        </View>
-
-        <View style={styles.sectionDivider} />
         <Text style={styles.sectionTitle}>Data</Text>
         <Pressable
           style={styles.dangerButton}
@@ -123,20 +104,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#1f2937',
     marginVertical: 24,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#1f2937',
-    borderRadius: 8,
-    padding: 14,
-  },
-  rowLabel: {
-    color: '#e5e7eb',
-    fontSize: 14,
-    flex: 1,
-    marginRight: 12,
   },
   dangerButton: {
     backgroundColor: '#7f1d1d',
