@@ -4,6 +4,8 @@ import {
   Alert,
   Button,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -174,7 +176,11 @@ export default function InterviewScreen({
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+    >
       {!started && (
         <View style={styles.modeScreen}>
           <Text style={styles.modeLabel}>Choose interview type</Text>
@@ -250,37 +256,49 @@ export default function InterviewScreen({
             </ScrollView>
           )}
 
-          <Pressable style={styles.addPhotoButton} onPress={addImage} disabled={uploadingImage}>
-            <Text style={styles.addPhotoText}>📷 Attach Photo</Text>
-          </Pressable>
+          {(recording || transcribing) && (
+            <Text style={styles.statusText}>
+              {recording ? '● Recording... release mic to stop' : 'Transcribing...'}
+            </Text>
+          )}
 
-          <View style={styles.inputRow}>
+          <View style={styles.inputBar}>
+            <Pressable
+              style={styles.iconButton}
+              onPress={addImage}
+              disabled={uploadingImage}
+            >
+              <Text style={styles.iconButtonText}>📷</Text>
+            </Pressable>
+
             <TextInput
-              style={styles.input}
-              placeholder="Type, or hold the mic button to speak..."
+              style={styles.inputBarText}
+              placeholder="Type, or hold mic to speak..."
               placeholderTextColor="#6b7280"
               value={input}
               onChangeText={setInput}
               multiline
             />
+
             <Pressable
-              style={[styles.micButton, recording && styles.micButtonActive]}
+              style={[styles.iconButton, recording && styles.micButtonActive]}
               onPressIn={startRecording}
               onPressOut={stopRecordingAndTranscribe}
             >
-              <Text style={styles.micButtonText}>
-                {transcribing
-                  ? 'Transcribing...'
-                  : recording
-                    ? '● Recording... release to stop'
-                    : '🎙️ Hold to speak'}
-              </Text>
+              <Text style={styles.iconButtonText}>🎙️</Text>
             </Pressable>
-            <Button title="Send" onPress={sendAnswer} disabled={loading || transcribing} />
+
+            <Pressable
+              style={[styles.sendButton, (loading || transcribing || !input.trim()) && styles.sendButtonDisabled]}
+              onPress={sendAnswer}
+              disabled={loading || transcribing || !input.trim()}
+            >
+              <Text style={styles.sendButtonText}>➤</Text>
+            </Pressable>
           </View>
         </>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -384,42 +402,57 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 14,
   },
-  addPhotoButton: {
+  statusText: {
+    color: '#f87171',
+    fontSize: 12,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  inputBar: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     backgroundColor: '#1f2937',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  addPhotoText: {
-    color: '#e5e7eb',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  inputRow: {
+    borderRadius: 20,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
     marginBottom: 20,
+    gap: 4,
   },
-  micButton: {
-    backgroundColor: '#1f2937',
-    borderRadius: 8,
-    paddingVertical: 12,
+  iconButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'center',
+  },
+  iconButtonText: {
+    fontSize: 18,
   },
   micButtonActive: {
     backgroundColor: '#7f1d1d',
   },
-  micButtonText: {
-    color: '#e5e7eb',
-    fontSize: 14,
-  },
-  input: {
-    backgroundColor: '#1f2937',
+  inputBarText: {
+    flex: 1,
     color: '#ffffff',
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 60,
-    marginBottom: 8,
-    textAlignVertical: 'top',
+    fontSize: 15,
+    maxHeight: 100,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  sendButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#4f46e5',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendButtonDisabled: {
+    backgroundColor: '#374151',
+  },
+  sendButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
