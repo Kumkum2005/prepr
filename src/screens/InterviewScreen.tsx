@@ -206,7 +206,12 @@ export default function InterviewScreen({
               onPress={() => {
                 const next = !voiceOn;
                 setVoiceOn(next);
-                if (!next) stopSpeaking();
+                if (!next) {
+                  stopSpeaking();
+                } else {
+                  const lastQuestion = [...messages].reverse().find((m) => m.role === 'assistant');
+                  if (lastQuestion) speak(lastQuestion.content);
+                }
               }}
             />
             <Button title="End Interview" onPress={endInterview} color="#dc2626" />
