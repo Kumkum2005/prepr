@@ -345,9 +345,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#f87171',
+    fontFamily: 'CourierPrime_400Regular',
   },
   empty: {
     color: '#9ca3af',
+    fontFamily: 'CourierPrime_400Regular',
     textAlign: 'center',
     paddingHorizontal: 20,
   },
@@ -362,11 +364,13 @@ const styles = StyleSheet.create({
   summaryText: {
     color: '#ffffff',
     fontSize: 16,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   summarySubtext: {
     color: '#9ca3af',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
     marginTop: 4,
   },
   archiveToggle: {
@@ -375,6 +379,7 @@ const styles = StyleSheet.create({
   archiveToggleText: {
     color: '#60a5fa',
     fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
   },
   searchInput: {
     backgroundColor: '#1f2937',
@@ -384,6 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 12,
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
   },
   filterPills: {
     flexDirection: 'row',
@@ -402,6 +408,7 @@ const styles = StyleSheet.create({
   filterPillText: {
     color: '#9ca3af',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   filterPillTextActive: {
@@ -427,26 +434,31 @@ const styles = StyleSheet.create({
   date: {
     color: '#9ca3af',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
   },
   modeTag: {
     color: '#60a5fa',
     fontSize: 11,
+    fontFamily: 'CourierPrime_400Regular',
     textTransform: 'uppercase',
   },
   menuDots: {
     color: '#9ca3af',
     fontSize: 18,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     paddingHorizontal: 4,
   },
   preview: {
     color: '#ffffff',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 6,
   },
   count: {
     color: '#6b7280',
     fontSize: 11,
+    fontFamily: 'CourierPrime_400Regular',
   },
   overlay: {
     flex: 1,
@@ -467,6 +479,7 @@ const styles = StyleSheet.create({
   actionItemText: {
     color: '#e5e7eb',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
   },
   deleteText: {
     color: '#f87171',
@@ -489,6 +502,7 @@ const styles = StyleSheet.create({
   renameLabel: {
     color: '#ffffff',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
     marginBottom: 10,
   },
@@ -522,12 +536,14 @@ const styles = StyleSheet.create({
   detailTitle: {
     color: '#ffffff',
     fontSize: 18,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     marginBottom: 2,
   },
   closeText: {
     color: '#60a5fa',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     marginLeft: 12,
   },
   detailChat: {
@@ -548,12 +564,14 @@ const styles = StyleSheet.create({
   bubbleLabel: {
     color: '#9ca3af',
     fontSize: 11,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 4,
     textTransform: 'uppercase',
   },
   bubbleText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     lineHeight: 21,
   },
   detailImageRow: {
@@ -576,6 +594,7 @@ const styles = StyleSheet.create({
   continueButtonText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
 });

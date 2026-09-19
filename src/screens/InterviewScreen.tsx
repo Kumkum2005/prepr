@@ -331,23 +331,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 100,
   },
   greeting: {
     color: '#ffffff',
-    fontSize: 26,
+    fontSize: 27,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     textAlign: 'center',
   },
   greetingSubtext: {
     color: '#9ca3af',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     marginTop: 6,
     marginBottom: 36,
     textAlign: 'center',
   },
   modeLabel: {
     color: '#9ca3af',
-    fontSize: 13,
+    fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 12,
     textAlign: 'center',
   },
@@ -370,6 +374,7 @@ const styles = StyleSheet.create({
   modeButtonText: {
     color: '#ffffff',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   chat: {
@@ -390,12 +395,14 @@ const styles = StyleSheet.create({
   bubbleLabel: {
     color: '#9ca3af',
     fontSize: 11,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 4,
     textTransform: 'uppercase',
   },
   bubbleText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     lineHeight: 21,
   },
   imageRow: {
@@ -428,12 +435,14 @@ const styles = StyleSheet.create({
   thumbnailRemoveText: {
     color: '#ffffff',
     fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     lineHeight: 14,
   },
   statusText: {
     color: '#f87171',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 6,
     textAlign: 'center',
   },
@@ -456,6 +465,7 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: 18,
+    fontFamily: 'CourierPrime_400Regular',
   },
   micButtonActive: {
     backgroundColor: '#7f1d1d',
@@ -464,6 +474,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     maxHeight: 100,
     paddingHorizontal: 8,
     paddingVertical: 8,
@@ -482,6 +493,7 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#ffffff',
     fontSize: 16,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
   },
 });

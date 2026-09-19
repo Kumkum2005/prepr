@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useFonts, CourierPrime_400Regular } from '@expo-google-fonts/courier-prime';
 import type { Session } from '@supabase/supabase-js';
 import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
@@ -18,6 +19,20 @@ import { InterviewSession } from './src/services/sessions';
 import { supabase, supabaseConfigured } from './src/services/supabase';
 
 export default function App() {
+  const [fontsLoaded] = useFonts({ CourierPrime_400Regular });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator color="#ffffff" />
+      </View>
+    );
+  }
+
+  return <AppContent />;
+}
+
+function AppContent() {
   const [session, setSession] = useState<Session | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [view, setView] = useState<'interview' | 'history'>('interview');
@@ -160,6 +175,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: '#9ca3af',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   tabTextActive: {
@@ -167,15 +183,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     color: '#ffffff',
   },
   subtitle: {
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     color: '#9ca3af',
   },
   setupText: {
     color: '#9ca3af',
+    fontFamily: 'CourierPrime_400Regular',
     textAlign: 'center',
     marginTop: 12,
     paddingHorizontal: 20,

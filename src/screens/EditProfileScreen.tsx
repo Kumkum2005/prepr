@@ -239,11 +239,13 @@ const styles = StyleSheet.create({
   title: {
     color: '#ffffff',
     fontSize: 20,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
   },
   closeText: {
     color: '#60a5fa',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
   },
   avatarWrap: {
     alignItems: 'center',
@@ -261,15 +263,18 @@ const styles = StyleSheet.create({
   avatarInitial: {
     color: '#ffffff',
     fontSize: 32,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
   },
   changePhotoText: {
     color: '#60a5fa',
     fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
   },
   label: {
     color: '#9ca3af',
     fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 6,
   },
   input: {
@@ -282,6 +287,7 @@ const styles = StyleSheet.create({
   emailText: {
     color: '#6b7280',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 18,
   },
   saveButton: {
@@ -294,6 +300,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   sectionDivider: {
@@ -304,6 +311,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#ffffff',
     fontSize: 16,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     marginBottom: 16,
   },

@@ -88,15 +88,18 @@ const styles = StyleSheet.create({
   title: {
     color: '#ffffff',
     fontSize: 20,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
   },
   closeText: {
     color: '#60a5fa',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
   },
   sectionTitle: {
     color: '#ffffff',
     fontSize: 16,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     marginBottom: 12,
   },
@@ -115,14 +118,17 @@ const styles = StyleSheet.create({
   dangerButtonText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
   helperText: {
     color: '#6b7280',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
   },
   aboutText: {
     color: '#9ca3af',
     fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
   },
 });

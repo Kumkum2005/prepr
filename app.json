@@ -36,7 +36,8 @@
           "photosPermission": "Prepr uses your photo library so you can attach images to interview sessions.",
           "cameraPermission": "Prepr uses your camera so you can attach photos to interview sessions."
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

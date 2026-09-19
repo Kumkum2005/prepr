@@ -109,11 +109,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
     color: '#ffffff',
   },
   subtitle: {
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
     color: '#9ca3af',
     marginBottom: 24,
   },
@@ -126,10 +128,12 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#f87171',
+    fontFamily: 'CourierPrime_400Regular',
     marginBottom: 12,
   },
   switchMode: {
     color: '#60a5fa',
+    fontFamily: 'CourierPrime_400Regular',
     marginTop: 20,
     textAlign: 'center',
   },
@@ -147,6 +151,7 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginHorizontal: 12,
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
   },
   googleButton: {
     backgroundColor: '#ffffff',
@@ -157,6 +162,7 @@ const styles = StyleSheet.create({
   googleButtonText: {
     color: '#111827',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '600',
   },
 });

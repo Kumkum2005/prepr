@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   avatarText: {
     color: '#ffffff',
     fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
     fontWeight: '700',
   },
   overlay: {
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
   email: {
     color: '#6b7280',
     fontSize: 12,
+    fontFamily: 'CourierPrime_400Regular',
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
@@ -120,6 +122,7 @@ const styles = StyleSheet.create({
   menuItemText: {
     color: '#e5e7eb',
     fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
   },
   signOutText: {
     color: '#f87171',
