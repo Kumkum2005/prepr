@@ -40,6 +40,7 @@ export default function HistoryScreen({
   const [renameText, setRenameText] = useState('');
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
   const [detailSession, setDetailSession] = useState<InterviewSession | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (visible) refresh();
@@ -132,9 +133,16 @@ export default function HistoryScreen({
   const behavioralCount = sessions.filter((s) => !s.archived && s.mode === 'behavioral').length;
   const technicalCount = sessions.filter((s) => !s.archived && s.mode === 'technical').length;
 
+  const query = searchQuery.trim().toLowerCase();
+
   const visibleSessions = sessions
     .filter((s) => s.archived === showArchived)
-    .filter((s) => modeFilter === 'all' || s.mode === modeFilter);
+    .filter((s) => modeFilter === 'all' || s.mode === modeFilter)
+    .filter((s) => {
+      if (!query) return true;
+      if (s.title?.toLowerCase().includes(query)) return true;
+      return s.transcript.some((m) => m.content.toLowerCase().includes(query));
+    });
 
   return (
     <View style={styles.container}>
@@ -157,6 +165,14 @@ export default function HistoryScreen({
         </Pressable>
       )}
 
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search sessions..."
+        placeholderTextColor="#6b7280"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
       <View style={styles.filterPills}>
         {(['all', 'behavioral', 'technical'] as ModeFilter[]).map((f) => (
           <Pressable
@@ -174,7 +190,11 @@ export default function HistoryScreen({
       {visibleSessions.length === 0 ? (
         <View style={styles.centered}>
           <Text style={styles.empty}>
-            {showArchived ? 'No archived sessions.' : 'No past sessions yet. Finish an interview to see it here.'}
+            {query
+              ? 'No sessions match your search.'
+              : showArchived
+                ? 'No archived sessions.'
+                : 'No past sessions yet. Finish an interview to see it here.'}
           </Text>
         </View>
       ) : (
@@ -355,6 +375,15 @@ const styles = StyleSheet.create({
   archiveToggleText: {
     color: '#60a5fa',
     fontSize: 13,
+  },
+  searchInput: {
+    backgroundColor: '#1f2937',
+    color: '#ffffff',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+    fontSize: 14,
   },
   filterPills: {
     flexDirection: 'row',
