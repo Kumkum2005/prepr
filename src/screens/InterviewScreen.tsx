@@ -4,8 +4,6 @@ import {
   Alert,
   Button,
   Image,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -176,11 +174,7 @@ export default function InterviewScreen({
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+    <View style={styles.container}>
       {!started && (
         <View style={styles.modeScreen}>
           <Text style={styles.modeLabel}>Choose interview type</Text>
@@ -298,7 +292,7 @@ export default function InterviewScreen({
           </View>
         </>
       )}
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

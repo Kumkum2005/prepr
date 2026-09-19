@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import type { Session } from '@supabase/supabase-js';
 import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
@@ -59,7 +67,10 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.title}>Prepr</Text>
@@ -106,7 +117,7 @@ export default function App() {
       </View>
 
       <StatusBar style="light" />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
