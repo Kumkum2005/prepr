@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -40,27 +40,41 @@ export default function InterviewScreen({
   const [voiceOn, setVoiceOn] = useState(true);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const sessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!resumeSession) return;
     setMode(resumeSession.mode);
     setMessages(resumeSession.transcript);
     setImages(resumeSession.images);
-    setSessionId(resumeSession.id);
+    sessionIdRef.current = resumeSession.id;
     setStarted(true);
     onResumed();
   }, [resumeSession]);
+
+  async function persistSession(currentMessages: ChatMessage[], currentImages: string[]) {
+    if (sessionIdRef.current) {
+      await updateSessionTranscript(sessionIdRef.current, currentMessages, currentImages);
+    } else {
+      sessionIdRef.current = await saveSession(userId, mode, currentMessages, currentImages);
+    }
+  }
 
   async function sendToInterviewer(history: ChatMessage[]) {
     setLoading(true);
     try {
       const reply = await continueInterview(history, mode);
-      setMessages([...history, { role: 'assistant', content: reply }]);
+      const updated = [...history, { role: 'assistant' as const, content: reply }];
+      setMessages(updated);
       if (voiceOn) speak(reply);
+      try {
+        await persistSession(updated, images);
+      } catch (saveError) {
+        console.error('Auto-save failed', saveError);
+      }
     } catch (error) {
       setMessages([
         ...history,
@@ -73,7 +87,7 @@ export default function InterviewScreen({
 
   function startInterview() {
     setStarted(true);
-    setSessionId(null);
+    sessionIdRef.current = null;
     setImages([]);
     const history: ChatMessage[] = [{ role: 'user', content: 'Start the interview.' }];
     setMessages(history);
@@ -91,18 +105,14 @@ export default function InterviewScreen({
   async function endInterview() {
     stopSpeaking();
     try {
-      if (sessionId) {
-        await updateSessionTranscript(sessionId, messages, images);
-      } else {
-        await saveSession(userId, mode, messages, images);
-      }
+      await persistSession(messages, images);
     } catch (error) {
-      Alert.alert('Could not save session', String(error));
+      Alert.alert('Could not save session', error instanceof Error ? error.message : String(error));
     }
     setStarted(false);
     setMessages([]);
     setInput('');
-    setSessionId(null);
+    sessionIdRef.current = null;
     setImages([]);
   }
 
@@ -120,7 +130,9 @@ export default function InterviewScreen({
       if (!uri) return;
       setUploadingImage(true);
       const url = await uploadImage(userId, uri);
-      setImages((prev) => [...prev, url]);
+      const updated = [...images, url];
+      setImages(updated);
+      await persistSession(messages, updated);
     } catch (error) {
       Alert.alert('Could not attach photo', error instanceof Error ? error.message : String(error));
     } finally {
@@ -128,8 +140,14 @@ export default function InterviewScreen({
     }
   }
 
-  function removeImage(index: number) {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+  async function removeImage(index: number) {
+    const updated = images.filter((_, i) => i !== index);
+    setImages(updated);
+    try {
+      await persistSession(messages, updated);
+    } catch (error) {
+      console.error('Auto-save failed', error);
+    }
   }
 
   async function startRecording() {

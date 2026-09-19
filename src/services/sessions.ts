@@ -16,11 +16,14 @@ export async function saveSession(
   mode: InterviewMode,
   transcript: ChatMessage[],
   images: string[]
-) {
-  const { error } = await supabase
+): Promise<string> {
+  const { data, error } = await supabase
     .from('sessions')
-    .insert({ user_id: userId, mode, transcript, images });
+    .insert({ user_id: userId, mode, transcript, images })
+    .select('id')
+    .single();
   if (error) throw error;
+  return data.id as string;
 }
 
 export async function listSessions(userId: string): Promise<InterviewSession[]> {
