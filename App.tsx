@@ -101,6 +101,9 @@ export default function App() {
       <View style={{ flex: 1, display: view === 'interview' ? 'flex' : 'none' }}>
         <InterviewScreen
           userId={session.user.id}
+          displayName={
+            session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'there'
+          }
           resumeSession={resumeSession}
           onResumed={() => setResumeSession(null)}
         />

@@ -25,10 +25,12 @@ import { transcribeAudio } from '../services/transcribe';
 
 export default function InterviewScreen({
   userId,
+  displayName,
   resumeSession,
   onResumed,
 }: {
   userId: string;
+  displayName: string;
   resumeSession: InterviewSession | null;
   onResumed: () => void;
 }) {
@@ -195,6 +197,8 @@ export default function InterviewScreen({
     <View style={styles.container}>
       {!started && (
         <View style={styles.modeScreen}>
+          <Text style={styles.greeting}>Hey {displayName},</Text>
+          <Text style={styles.greetingSubtext}>Ready to practice for your next interview?</Text>
           <Text style={styles.modeLabel}>Choose interview type</Text>
           <View style={styles.modeRow}>
             {INTERVIEW_MODES.map((m) => (
@@ -327,6 +331,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  greeting: {
+    color: '#ffffff',
+    fontSize: 26,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  greetingSubtext: {
+    color: '#9ca3af',
+    fontSize: 14,
+    marginTop: 6,
+    marginBottom: 36,
+    textAlign: 'center',
   },
   modeLabel: {
     color: '#9ca3af',
