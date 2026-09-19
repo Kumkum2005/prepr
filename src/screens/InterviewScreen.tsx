@@ -161,7 +161,7 @@ export default function InterviewScreen({
     setRecording(false);
     try {
       await recorder.stop();
-      await setAudioModeAsync({ allowsRecording: false });
+      await setAudioModeAsync({ allowsRecording: false, playsInSilentMode: true });
       const uri = recorder.uri;
       if (!uri) {
         Alert.alert('No recording captured', 'Try holding the button a little longer.');
