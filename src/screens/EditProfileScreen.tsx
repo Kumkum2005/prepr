@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#1f2937',
     color: '#ffffff',
+    fontFamily: 'CourierPrime_400Regular',
     borderRadius: 8,
     padding: 12,
     marginBottom: 18,

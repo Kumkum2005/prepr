@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Button,
   Image,
   Pressable,
   ScrollView,
@@ -211,15 +210,17 @@ export default function InterviewScreen({
               </Pressable>
             ))}
           </View>
-          <Button title="Start Interview" onPress={startInterview} />
+          <Pressable style={styles.startButton} onPress={startInterview}>
+            <Text style={styles.startButtonText}>Start Interview</Text>
+          </Pressable>
         </View>
       )}
 
       {started && (
         <>
           <View style={styles.interviewHeader}>
-            <Button
-              title={voiceOn ? '🔊 Voice On' : '🔇 Voice Off'}
+            <Pressable
+              style={styles.headerButton}
               onPress={() => {
                 const next = !voiceOn;
                 setVoiceOn(next);
@@ -230,8 +231,12 @@ export default function InterviewScreen({
                   if (lastQuestion) speak(lastQuestion.content);
                 }
               }}
-            />
-            <Button title="End Interview" onPress={endInterview} color="#dc2626" />
+            >
+              <Text style={styles.headerButtonText}>{voiceOn ? '🔊 Voice On' : '🔇 Voice Off'}</Text>
+            </Pressable>
+            <Pressable style={styles.endButton} onPress={endInterview}>
+              <Text style={styles.endButtonText}>End Interview</Text>
+            </Pressable>
           </View>
 
           <ScrollView style={styles.chat}>
@@ -326,6 +331,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
+  },
+  headerButton: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  headerButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
+    fontWeight: '600',
+  },
+  endButton: {
+    backgroundColor: '#dc2626',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  endButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontFamily: 'CourierPrime_400Regular',
+    fontWeight: '600',
+  },
+  startButton: {
+    backgroundColor: '#4f46e5',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  startButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
+    fontWeight: '600',
   },
   modeScreen: {
     flex: 1,

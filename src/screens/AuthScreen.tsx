@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { signIn, signUp } from '../services/auth';
 import { signInWithGoogle } from '../services/googleAuth';
 
@@ -66,11 +66,15 @@ export default function AuthScreen() {
 
       {!!error && <Text style={styles.error}>{error}</Text>}
 
-      <Button
-        title={submitting ? 'Please wait...' : mode === 'signIn' ? 'Log In' : 'Sign Up'}
+      <Pressable
+        style={[styles.submitButton, (submitting || !email.trim() || !password) && styles.submitButtonDisabled]}
         onPress={handleSubmit}
         disabled={submitting || !email.trim() || !password}
-      />
+      >
+        <Text style={styles.submitButtonText}>
+          {submitting ? 'Please wait...' : mode === 'signIn' ? 'Log In' : 'Sign Up'}
+        </Text>
+      </Pressable>
 
       <View style={styles.divider}>
         <View style={styles.dividerLine} />
@@ -119,9 +123,25 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     marginBottom: 24,
   },
+  submitButton: {
+    backgroundColor: '#4f46e5',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#374151',
+  },
+  submitButtonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontFamily: 'CourierPrime_400Regular',
+    fontWeight: '600',
+  },
   input: {
     backgroundColor: '#1f2937',
     color: '#ffffff',
+    fontFamily: 'CourierPrime_400Regular',
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,

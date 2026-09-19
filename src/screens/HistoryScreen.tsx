@@ -509,6 +509,7 @@ const styles = StyleSheet.create({
   renameInput: {
     backgroundColor: '#111827',
     color: '#ffffff',
+    fontFamily: 'CourierPrime_400Regular',
     borderRadius: 8,
     padding: 10,
     marginBottom: 12,
