@@ -30,3 +30,18 @@ export async function updatePassword(password: string) {
   const { error } = await supabase.auth.updateUser({ password });
   if (error) throw error;
 }
+
+export async function requestPasswordReset(email: string) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  if (error) throw error;
+}
+
+export async function resetPasswordWithCode(email: string, code: string, newPassword: string) {
+  const { error: verifyError } = await supabase.auth.verifyOtp({
+    email,
+    token: code,
+    type: 'recovery',
+  });
+  if (verifyError) throw verifyError;
+  await updatePassword(newPassword);
+}

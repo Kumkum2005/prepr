@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { signIn, signUp } from '../services/auth';
 import { signInWithGoogle } from '../services/googleAuth';
+import ResetPasswordScreen from './ResetPasswordScreen';
 
 export default function AuthScreen() {
-  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn');
+  const [mode, setMode] = useState<'signIn' | 'signUp' | 'reset'>('signIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -39,6 +40,10 @@ export default function AuthScreen() {
     }
   }
 
+  if (mode === 'reset') {
+    return <ResetPasswordScreen initialEmail={email} onBack={() => setMode('signIn')} />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Prepr</Text>
@@ -63,6 +68,12 @@ export default function AuthScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {mode === 'signIn' && (
+        <Text style={styles.forgotLink} onPress={() => setMode('reset')}>
+          Forgot password?
+        </Text>
+      )}
 
       {!!error && <Text style={styles.error}>{error}</Text>}
 
@@ -150,6 +161,13 @@ const styles = StyleSheet.create({
     color: '#f87171',
     fontFamily: 'CourierPrime_400Regular',
     marginBottom: 12,
+  },
+  forgotLink: {
+    color: '#60a5fa',
+    fontSize: 13,
+    fontFamily: 'CourierPrime_400Regular',
+    textAlign: 'right',
+    marginBottom: 14,
   },
   switchMode: {
     color: '#60a5fa',
