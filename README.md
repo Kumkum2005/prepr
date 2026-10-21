@@ -1,54 +1,94 @@
 # Prepr
 
-An AI-powered mock interview coach. Talk through behavioral and technical
-interview questions out loud, get structured feedback in real time, and
-track your progress across sessions.
+An AI mock-interview coach for iOS, Android, and web. Pick behavioral or
+technical, answer out loud or by typing, and get specific, structured
+feedback from Claude after every answer. Every session is saved so you can
+search it, review it, and pick it back up later.
 
-Built with React Native (Expo) so the same codebase ships to both the App
-Store and Google Play. The interviewer is powered by Claude, with speech-to-
-text and text-to-speech for a real spoken conversation.
+Built with React Native (Expo) and TypeScript: one codebase for both app
+stores and the browser.
+
+## Features
+
+- **Two interview modes** - behavioral (STAR-method feedback) and technical
+  (approach, edge cases, complexity), each with its own interviewer prompt
+- **Voice in and out** - hold-to-speak answers transcribed with OpenAI
+  Whisper; interviewer questions read aloud with text-to-speech
+- **Auto-saved sessions** - saved to Supabase after every exchange, so a
+  crash or force-quit never loses an interview
+- **History** - search by title or transcript text, filter by mode, rename,
+  archive, delete, and continue any past session where you left off
+- **Photo attachments** - attach whiteboard sketches or diagrams to a session
+  (camera or library, stored in Supabase Storage)
+- **Accounts** - email/password and Google sign-in, profile photo and display
+  name, verified password change
+- **Per-user data isolation** - Postgres row-level security on every table
+  and storage policy, so users can only touch their own data
 
 ## Tech stack
 
-- **App**: React Native + Expo + TypeScript
-- **AI**: Claude (Anthropic API) — agentic interview flow, structured feedback
-- **Voice**: speech-to-text (user answers) + text-to-speech (AI questions)
-- **Backend**: Supabase (auth, Postgres, session history)
+| Area | Choice |
+| --- | --- |
+| App | React Native, Expo (SDK 57), TypeScript |
+| Interviewer | Claude (Anthropic API) |
+| Speech-to-text | OpenAI Whisper |
+| Text-to-speech | expo-speech |
+| Auth, database, storage | Supabase (Postgres + RLS + Storage) |
 
-## Roadmap
-
-- [x] Project scaffold
-- [x] Phase 1 — MVP: one behavioral interview mode, text-based Q&A loop with Claude, feedback after each answer
-- [x] Phase 2 — Voice: speech-to-text input, text-to-speech questions
-- [x] Phase 3 — Accounts & history: Supabase auth, save past sessions
-- [x] Phase 4 — More modes: coding/system-design questions, progress dashboard
-- [ ] Phase 5 — Polish & app store prep: icons, screenshots, privacy policy, store listings
-- [ ] Phase 6 — Submit to App Store & Google Play
-
-## Known improvements for later
-
-- Voice recording → transcription feels slow; look into speeding up the
-  record/upload/transcribe round trip.
-- Email confirmation is currently turned off in Supabase (the confirmation
-  link tries to open a website that doesn't exist). Before real users sign
-  up, set up a proper deep link (e.g. `prepr://`) so confirmation opens
-  back into the app instead of a browser.
-- Google Sign-In is coded but not fully working yet — it needs a
-  development build (not Expo Go) to test the login redirect properly,
-  which needs an Apple Developer account for iOS. Revisit alongside Apple
-  Sign-In once that account exists.
-- Settings currently offers "Delete All My Data" (sessions + photos) but
-  not full account deletion (removing the login itself). Apple requires
-  in-app account deletion for App Store approval if account creation is
-  offered in-app — this needs a Supabase Edge Function (the client key
-  can't delete auth users directly). Build before Phase 6 submission.
-
-## Getting started
+## Running it locally
 
 ```bash
 npm install
-npm run ios      # or: npm run android / npm run web
+cp .env.example .env     # then fill in your own keys
+npx expo start           # scan the QR code with Expo Go, or press w for web
 ```
 
-Copy `.env.example` to `.env` and fill in your own API keys before running
-anything that talks to Claude or Supabase.
+You need your own accounts/keys for:
+
+- **Anthropic** (`EXPO_PUBLIC_ANTHROPIC_API_KEY`) - interviewer
+- **OpenAI** (`EXPO_PUBLIC_OPENAI_API_KEY`) - Whisper transcription
+- **Supabase** (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`) -
+  create a free project, then run [`supabase/schema.sql`](supabase/schema.sql)
+  in the SQL editor (creates the `sessions` table, storage bucket, and all
+  row-level-security policies)
+
+In Supabase, turn off "Confirm email" under Authentication > Providers >
+Email for local testing.
+
+## Security note
+
+This is a client-side prototype: the Anthropic and OpenAI keys are read from
+`EXPO_PUBLIC_*` variables, which Expo bundles into the app. That is fine for
+running it yourself with your own keys, but **do not deploy a public build
+with real keys in it**. A production version should move the Claude and
+Whisper calls behind a small server-side proxy (e.g. a Supabase Edge
+Function) so the keys never reach the client. The Supabase anon key is safe
+to ship by design; access is enforced by row-level security.
+
+## Project layout
+
+```
+App.tsx                 root: auth gate, tabs, keyboard handling
+src/screens/            Interview, History, Auth, EditProfile, Settings
+src/components/         ProfileMenu
+src/services/           claude, transcribe, speech, sessions, images,
+                        auth, googleAuth, supabase
+supabase/               schema.sql (fresh setup) + incremental migrations
+```
+
+## Roadmap
+
+- [x] Behavioral and technical interview modes with Claude feedback
+- [x] Voice input (Whisper) and spoken questions
+- [x] Accounts, session history, search, and resume
+- [x] Photo attachments, profile editing, settings
+- [ ] Server-side proxy for AI calls (required before any public deploy)
+- [ ] Full account deletion via Edge Function (App Store requirement)
+- [ ] Google/Apple sign-in verified on a development build
+- [ ] Email confirmation deep link (`prepr://`)
+- [ ] Responsive web layout for desktop
+- [ ] App Store and Google Play submission
+
+## License
+
+MIT - see [LICENSE](LICENSE).
