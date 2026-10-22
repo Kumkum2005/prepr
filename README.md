@@ -8,6 +8,17 @@ search it, review it, and pick it back up later.
 Built with React Native (Expo) and TypeScript: one codebase for both app
 stores and the browser.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/01-login.png" width="190" alt="Login"><br><sub>Login</sub></td>
+    <td align="center"><img src="docs/screenshots/02-start.png" width="190" alt="Start screen"><br><sub>Start an interview</sub></td>
+    <td align="center"><img src="docs/screenshots/04-interview.png" width="190" alt="Live interview"><br><sub>Live interview</sub></td>
+    <td align="center"><img src="docs/screenshots/03-history.png" width="190" alt="History"><br><sub>Searchable history</sub></td>
+  </tr>
+</table>
+
 ## Features
 
 - **Two interview modes** - behavioral (STAR-method feedback) and technical
