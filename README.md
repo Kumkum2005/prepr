@@ -83,6 +83,8 @@ supabase/               schema.sql (fresh setup) + incremental migrations
 - [x] Accounts, session history, search, and resume
 - [x] Photo attachments, profile editing, settings
 - [ ] Server-side proxy for AI calls (required before any public deploy)
+- [ ] Custom SMTP provider (Supabase's built-in sender can't edit templates;
+      the forgot-password code flow needs the reset email to include `{{ .Token }}`)
 - [ ] Full account deletion via Edge Function (App Store requirement)
 - [ ] Google/Apple sign-in verified on a development build
 - [ ] Email confirmation deep link (`prepr://`)
