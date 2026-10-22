@@ -11,7 +11,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import RichText from '../components/RichText';
 import { InterviewMode } from '../services/claude';
+import { stripBold } from '../utils/markdown';
 import {
   deleteSession,
   InterviewSession,
@@ -57,7 +59,7 @@ export default function HistoryScreen({
   function sessionLabel(session: InterviewSession) {
     if (session.title) return session.title;
     const firstQuestion = session.transcript.find((m) => m.role === 'assistant');
-    return firstQuestion?.content ?? 'Empty session';
+    return stripBold(firstQuestion?.content ?? 'Empty session');
   }
 
   function openRename(session: InterviewSession) {
@@ -301,7 +303,11 @@ export default function HistoryScreen({
                     <Text style={styles.bubbleLabel}>
                       {m.role === 'assistant' ? 'Interviewer' : 'You'}
                     </Text>
-                    <Text style={styles.bubbleText}>{m.content}</Text>
+                    {m.role === 'assistant' ? (
+                      <RichText text={m.content} style={styles.bubbleText} />
+                    ) : (
+                      <Text style={styles.bubbleText}>{m.content}</Text>
+                    )}
                   </View>
                 ))}
             </ScrollView>

@@ -9,7 +9,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useFonts, CourierPrime_400Regular } from '@expo-google-fonts/courier-prime';
+import {
+  useFonts,
+  CourierPrime_400Regular,
+  CourierPrime_700Bold,
+} from '@expo-google-fonts/courier-prime';
 import type { Session } from '@supabase/supabase-js';
 import AuthScreen from './src/screens/AuthScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
@@ -19,7 +23,7 @@ import { InterviewSession } from './src/services/sessions';
 import { supabase, supabaseConfigured } from './src/services/supabase';
 
 export default function App() {
-  const [fontsLoaded] = useFonts({ CourierPrime_400Regular });
+  const [fontsLoaded] = useFonts({ CourierPrime_400Regular, CourierPrime_700Bold });
 
   if (!fontsLoaded) {
     return (
@@ -89,7 +93,7 @@ function AppContent() {
       <View style={styles.headerRow}>
         <View>
           <Text style={styles.title}>Prepr</Text>
-          <Text style={styles.subtitle}>Mock behavioral interview</Text>
+          <Text style={styles.subtitle}>Your AI interview coach</Text>
         </View>
         <ProfileMenu user={session.user} />
       </View>

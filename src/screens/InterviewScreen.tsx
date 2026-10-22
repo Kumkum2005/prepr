@@ -16,6 +16,7 @@ import {
   setAudioModeAsync,
   useAudioRecorder,
 } from 'expo-audio';
+import RichText from '../components/RichText';
 import { ChatMessage, continueInterview, INTERVIEW_MODES, InterviewMode } from '../services/claude';
 import { pickImage, uploadImage } from '../services/images';
 import { InterviewSession, saveSession, updateSessionTranscript } from '../services/sessions';
@@ -253,7 +254,11 @@ export default function InterviewScreen({
                   <Text style={styles.bubbleLabel}>
                     {m.role === 'assistant' ? 'Interviewer' : 'You'}
                   </Text>
-                  <Text style={styles.bubbleText}>{m.content}</Text>
+                  {m.role === 'assistant' ? (
+                    <RichText text={m.content} style={styles.bubbleText} />
+                  ) : (
+                    <Text style={styles.bubbleText}>{m.content}</Text>
+                  )}
                 </View>
               ))}
             {loading && <ActivityIndicator color="#ffffff" style={{ marginTop: 12 }} />}
